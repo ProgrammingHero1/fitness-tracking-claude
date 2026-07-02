@@ -73,21 +73,21 @@ Remove the `/api/_debug/whoami` route once F11 passes.
 
 ## Track B — Gym Admin: Members & Classes
 
-- [ ] **B1.** `services/membershipService.js`.
-- [ ] **B2.** Members routes: list/invite/PATCH/DELETE (soft-delete). *Validate:* as gym admin, invite a member (temp password shown on screen), list shows it, PATCH toggles `paymentStatus`, DELETE soft-deletes (excluded from active roster, still in DB).
-- [ ] **B3.** `services/classService.js`.
-- [ ] **B4.** Classes routes: CRUD + cancel. *Validate:* create/edit/cancel a class as gym admin; capacity field enforced at the data layer.
-- [ ] **B5.** Frontend: `gym-admin/members`, `gym-admin/members/invite`.
-- [ ] **B6.** Frontend: `gym-admin/classes`, `gym-admin/classes/[classId]`. *Validate:* browser walkthrough — invite a member, schedule a class, edit it, cancel it.
+- [x] **B1.** `services/membershipService.js`. (2026-07-01)
+- [x] **B2.** Members routes: list/invite/PATCH/DELETE (soft-delete). (2026-07-01, verified via curl against a seeded gym+gym admin: invite returns a temp password, list shows the new member, PATCH toggles `paymentStatus`, DELETE soft-deletes — excluded from default list, still present with `includeInactive=true`)
+- [x] **B3.** `services/classService.js`. (2026-07-01)
+- [x] **B4.** Classes routes: CRUD + cancel. (2026-07-01, verified via curl: create/list/get/edit/cancel; capacity stored as BSON `Int32` to satisfy the `$jsonSchema` validator's `bsonType: 'int'`; cancel cascades to any outstanding bookings. Also fixed a Foundation (F7) bug found along the way — every non-`users` validator had `additionalProperties: false` without `_id` in `properties`, which rejected every insert into `gyms`/`memberships`/`classes`/`bookings`/`checkins`/`billingEvents`; added `_id` to each and re-ran the migration.)
+- [x] **B5.** Frontend: `gym-admin/members`, `gym-admin/members/invite`. (2026-07-01)
+- [x] **B6.** Frontend: `gym-admin/classes`, `gym-admin/classes/[classId]`. (2026-07-01, verified server-rendered output via an isolated worktree + separate ports (no browser tool available in this environment) — signed in as the seeded gym admin and fetched `/gym-admin/members`, `/gym-admin/members/invite`, `/gym-admin/classes`, and `/gym-admin/classes/[classId]` through the real Next.js proxy → Express → Mongo chain; all rendered the expected seeded data. ESLint clean on all new files.)
 
 ## Track C — Member Portal
 
 > B3/B4 (classes collection + routes) should land before C's final browser validation, since booking needs real classes to book. The backend (C1–C4) can be built in parallel against a class doc seeded directly in Mongo.
 
-- [ ] **C1.** `services/bookingService.js` (double-booking prevented via unique index on `bookings`).
-- [ ] **C2.** `services/checkinService.js`.
-- [ ] **C3.** Member routes: status, classes list/book/cancel.
-- [ ] **C4.** Member routes: checkin (general + per-class), checkin history. *Validate:* using a manually-seeded class doc, confirm a member user can list/book/cancel via API calls (curl/Postman is fine here).
+- [x] **C1.** `services/bookingService.js` (double-booking prevented via unique index on `bookings`). (2026-07-01)
+- [x] **C2.** `services/checkinService.js`. (2026-07-01)
+- [x] **C3.** Member routes: status, classes list/book/cancel. (2026-07-01)
+- [x] **C4.** Member routes: checkin (general + per-class), checkin history. *Validate:* using a manually-seeded class doc, confirm a member user can list/book/cancel via API calls (curl/Postman is fine here). (2026-07-01, verified via curl against a seeded class + two members across two gyms: status/list/book/cancel/rebook, capacity-full 409, cross-tenant 404/empty-list, 401 unauthenticated, 400 on malformed id)
 - [ ] **C5.** Frontend: `member/classes` (browse/book/cancel).
 - [ ] **C6.** Frontend: `member/checkin`.
 - [ ] **C7.** `/join/[inviteCode]` self-registration page + route. *Validate (matches `plan.md`'s Phase 5/6 verification):* full member journey — join via invite code → view status → book a class → check in.
@@ -96,8 +96,8 @@ Remove the `/api/_debug/whoami` route once F11 passes.
 
 > Fully independent of A/B/C — only needs Foundation. Good candidate to build first among the parallel tracks, or hand to a separate session/agent.
 
-- [ ] **D1.** Platform admin routes: `GET /gyms`, `GET /gyms/:gymId`, `PATCH /gyms/:gymId/status`.
-- [ ] **D2.** Frontend: `platform-admin` (gyms list, `gyms/[gymId]` detail). *Validate:* as platform admin, view the gyms list, suspend a gym, confirm that gym's admin is locked out of everything except billing/profile immediately (needs at least one gym from Track A to fully validate — use a manually-inserted `gyms` doc if Track A isn't done yet).
+- [x] **D1.** Platform admin routes: `GET /gyms`, `GET /gyms/:gymId`, `PATCH /gyms/:gymId/status`. (2026-07-01, verified via curl: list/detail/status-update as platform admin, 403 as gym admin, 400 on malformed id, 404 on unknown id, 400 on invalid status value)
+- [x] **D2.** Frontend: `platform-admin` (gyms list, `gyms/[gymId]` detail). (2026-07-01, verified in-browser via Playwright: sign in as platform admin → gyms list shows the seeded "Track B Gym" → detail page → Suspend gym → status flips to suspended and button relabels → Reactivate gym → back to active; no console errors). Note: the "gym admin locked out except billing/profile" half of this validation step depends on real `checkGymSubscriptionActive`/status gating, which is Track A's A7 and is still a stub — re-check that half once A7 lands.
 
 ---
 

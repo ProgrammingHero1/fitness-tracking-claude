@@ -5,6 +5,7 @@ module.exports = {
     bsonType: 'object',
     required: ['gymId', 'userId', 'planName', 'status', 'paymentStatus', 'joinedAt'],
     properties: {
+      _id: { bsonType: 'objectId' },
       gymId: { bsonType: 'objectId' },
       userId: { bsonType: 'objectId' },
       planName: { bsonType: 'string' },

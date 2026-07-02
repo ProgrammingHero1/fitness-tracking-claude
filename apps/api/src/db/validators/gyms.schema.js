@@ -5,6 +5,7 @@ module.exports = {
     bsonType: 'object',
     required: ['name', 'slug', 'ownerUserId', 'status', 'inviteCode', 'subscription'],
     properties: {
+      _id: { bsonType: 'objectId' },
       name: { bsonType: 'string' },
       slug: { bsonType: 'string' },
       ownerUserId: { bsonType: 'objectId' },
