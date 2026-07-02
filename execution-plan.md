@@ -13,7 +13,7 @@ Companion to `plan.md` (architecture/design source of truth — don't duplicate 
 
 ## Foundation (sequential — do not parallelize)
 
-- [ ] **F1. Root workspace scaffold**
+- [x] **F1. Root workspace scaffold** (2026-07-01)
   Create root `package.json` (npm workspaces: `["apps/*","packages/*"]`), `.gitignore`, `.env.example`.
   *Validate:* `npm install` at repo root completes with no errors; `apps/`, `packages/` resolve as workspaces (`npm ls --workspaces` lists them once F3/F4 exist).
 
@@ -21,38 +21,38 @@ Companion to `plan.md` (architecture/design source of truth — don't duplicate 
   `src/roles.js` (role enum), `src/constants.js` (status enums: subscription status, membership status, booking status, etc.).
   *Validate:* a throwaway `node -e "require('./packages/shared/src/roles.js')"` resolves without error.
 
-- [ ] **F3. Scaffold `apps/web`**
+- [x] **F3. Scaffold `apps/web`** (pre-existing, confirmed 2026-07-02)
   `create-next-app` with JS, Tailwind, App Router.
   *Validate:* `npm run dev` in `apps/web` serves the default page at `localhost:3000`.
 
-- [ ] **F4. Scaffold `apps/api`**
+- [x] **F4. Scaffold `apps/api`** (2026-07-01)
   Minimal `app.js`/`server.js` with one `GET /api/health` route.
   *Validate:* `node src/server.js` boots; `curl localhost:4000/api/health` returns 200.
 
-- [ ] **F5. Next.js → Express proxy**
+- [x] **F5. Next.js → Express proxy** (2026-07-01)
   `next.config.js` `rewrites()` forwarding `/api/*` to `API_PROXY_TARGET`.
   *Validate:* with both dev servers running, `curl localhost:3000/api/health` returns the same response as F4 (proxied, not a Next.js 404).
 
-- [ ] **F6. Mongo connection singleton**
+- [x] **F6. Mongo connection singleton** (2026-07-02)
   `db/connection.js`, cached-client pattern from day one.
   *Validate:* a throwaway script imports it, connects using the real `MONGODB_URI`, prints the resolved db name.
 
-- [ ] **F7. Validators + migration script**
+- [x] **F7. Validators + migration script** (2026-07-02)
   All 7 `db/validators/*.schema.js` files, `db/migrations/001-init-collections-and-indexes.js`.
   *Validate:* run the migration against Atlas; confirm via `mongosh`/Compass that all 7 collections exist with the indexes listed in `plan.md`'s Data Model section.
 
-- [ ] **F8. better-auth wiring**
+- [x] **F8. better-auth wiring** (2026-07-02)
   `auth/betterAuth.js` (Mongo adapter, `additionalFields` for `role`/`gymId`), mounted at `/api/auth/*`.
   *Validate:* `POST /api/auth/sign-up/email` creates a document in `users` with the expected shape.
 
-- [ ] **F9. `scripts/seedPlatformAdmin.js`**
+- [x] **F9. `scripts/seedPlatformAdmin.js`** (2026-07-02)
   *Validate:* run it once; confirm a `users` doc with `role: "platformAdmin"` exists and can sign in via `/api/auth/sign-in/email`.
 
-- [ ] **F10. Middleware chain**
+- [x] **F10. Middleware chain** (2026-07-02)
   `requireAuth`, `requireRole`, `scopeToGym`, `checkGymSubscriptionActive` (stub: always passes for now), `errorHandler`. Wire on one throwaway route, e.g. `GET /api/_debug/whoami`.
   *Validate:* no cookie → 401; platform-admin session cookie → 200 with `req.authUser` echoed back.
 
-- [ ] **F11. End-to-end session smoke test**
+- [x] **F11. End-to-end session smoke test** (2026-07-02)
   Minimal `platform-admin` layout in `apps/web` that checks session server-side and redirects on failure.
   *Validate (matches `plan.md`'s Phase-3 verification):* sign in as platform admin in the browser, confirm the cookie round-trips through the Next.js proxy, confirm `role`/`gymId` show up correctly.
 
