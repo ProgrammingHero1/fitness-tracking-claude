@@ -17,7 +17,7 @@ Companion to `plan.md` (architecture/design source of truth — don't duplicate 
   Create root `package.json` (npm workspaces: `["apps/*","packages/*"]`), `.gitignore`, `.env.example`.
   *Validate:* `npm install` at repo root completes with no errors; `apps/`, `packages/` resolve as workspaces (`npm ls --workspaces` lists them once F3/F4 exist).
 
-- [ ] **F2. `packages/shared`**
+- [x] **F2. `packages/shared`** (2026-07-01)
   `src/roles.js` (role enum), `src/constants.js` (status enums: subscription status, membership status, booking status, etc.).
   *Validate:* a throwaway `node -e "require('./packages/shared/src/roles.js')"` resolves without error.
 
